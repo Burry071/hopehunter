@@ -1,0 +1,265 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>HopeHunter</title>
+<style>
+  :root {
+    --bg:#faf7f2; --card:#fff; --ink:#1f2328; --mute:#6b7280; --line:#e8e2d8;
+    --accent:#b45309; --btn-bg:#b45309; --btn-ink:#fff; --link:#9a4708;
+    --good:#2f855a; --warn:#96601a; --bad:#9b1c1c;
+    --note-bg:#fdf0dd; --note-ink:#6b3a05; --err-bg:#fbe9e9; --err-ink:#8c1c1c;
+    --hover:#f6efe5;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg:#14161a; --card:#1b1e23; --ink:#e8eaee; --mute:#98a1af; --line:#2a2e36;
+      --btn-bg:#f0a860; --btn-ink:#241403; --link:#f0a860;
+      --good:#7ddba8; --warn:#e8b04a; --bad:#e89b9b;
+      --note-bg:#33271a; --note-ink:#e8b04a; --err-bg:#331d1d; --err-ink:#e89b9b;
+      --hover:#22262d;
+    }
+  }
+  * { box-sizing: border-box; }
+  body { margin:0; font:16px/1.55 system-ui,-apple-system,Segoe UI,Roboto,sans-serif; background:var(--bg); color:var(--ink); }
+  ::selection { background:var(--btn-bg); color:var(--btn-ink); }
+  main { max-width:720px; margin:0 auto; padding:28px 16px 80px; }
+  h1 { margin:0 0 6px; font-size:27px; letter-spacing:-0.02em; }
+  .sub { color:var(--mute); margin:0 0 24px; max-width:60ch; }
+  .card { background:var(--card); border:1px solid var(--line); border-radius:14px; padding:18px 18px 20px; margin-bottom:18px; }
+  h2 { font-size:16px; font-weight:650; margin:0 0 8px; letter-spacing:-0.01em; }
+  h3 { font-size:18px; font-weight:650; letter-spacing:-0.015em; margin:0 0 6px; }
+  textarea, input { width:100%; padding:10px 12px; border:1px solid var(--line); border-radius:10px; background:transparent; color:inherit; font:inherit; caret-color:var(--link); }
+  textarea { min-height:110px; resize:vertical; }
+  label { display:block; font-weight:600; font-size:14px; margin:0 0 6px; }
+  button { font:inherit; padding:9px 14px; min-height:44px; border-radius:10px; border:1px solid var(--btn-bg); background:var(--btn-bg); color:var(--btn-ink); cursor:pointer; }
+  button.ghost { background:transparent; color:var(--link); border-color:var(--line); }
+  button.ghost:hover { background:var(--hover); border-color:var(--link); }
+  button.small { padding:7px 11px; font-size:14px; min-height:40px; }
+  button:not(.ghost):hover { filter:brightness(1.06); }
+  button:disabled { opacity:.55; cursor:wait; }
+  button:focus-visible, a:focus-visible, textarea:focus-visible, input:focus-visible, summary:focus-visible {
+    outline:2px solid var(--link); outline-offset:2px; }
+  .row { display:flex; gap:8px; margin-top:12px; flex-wrap:wrap; align-items:center; }
+  a.small { color:var(--link); text-decoration:none; font-size:14px; padding:8px 10px; min-height:40px; display:inline-flex; align-items:center; }
+  a.small:hover { text-decoration:underline; text-underline-offset:3px; }
+  /* One pill per card, and only for a single word. A sentence in a pill is a paragraph with a
+     border around it, which is what made every card look like four different things at once. */
+  .tag { display:inline-block; font-size:12px; font-weight:550; padding:1px 8px; border-radius:999px;
+         border:1px solid var(--line); color:var(--mute); }
+  #modelBanner { display:none; background:var(--note-bg); color:var(--note-ink); padding:11px 13px;
+                 border-radius:10px; margin-bottom:14px; font-size:15px; }
+  .feed-item { padding:13px 0; border-top:1px solid var(--line); }
+  .feed-item:first-child { border-top:0; }
+  .fi-title { font-weight:600; letter-spacing:-0.01em; }
+  .fi-meta { display:inline-flex; gap:8px; align-items:center; }
+  .fi-reason { margin:3px 0 0; color:var(--mute); font-size:15px; }
+  .fi-foot { display:flex; gap:12px; align-items:center; justify-content:space-between; flex-wrap:wrap; margin-top:7px; }
+  .fi-src { font-size:13px; color:var(--mute); }
+  .fi-acts { display:flex; gap:2px; align-items:center; }
+  /* Ten rows of bordered buttons is twenty borders on one screen. Inside a list the action is
+     the words, not a box around them; the filled button belongs to the page, not to a row. */
+  .fi-acts button.ghost { border:0; background:transparent; padding:7px 9px; }
+  .fi-acts button.ghost:hover { background:var(--hover); }
+  .meta { color:var(--mute); font-size:14px; margin:0 0 8px; }
+  #scanNote { margin:12px 0 4px; }
+  .lead { color:var(--mute); font-size:14.5px; margin:0 0 14px; max-width:62ch; }
+  /* The deadline is the one fact on the card the app can be wrong about, so it gets its own
+     line with a dot that carries the colour - not a fourth pill. */
+  .dl { display:flex; gap:8px; align-items:baseline; margin:8px 0 0; font-size:14.5px; }
+  .dot { flex:none; width:8px; height:8px; border-radius:50%; background:var(--mute); transform:translateY(-1px); }
+  .dl.good { color:var(--good); } .dl.good .dot { background:var(--good); }
+  .dl.warn { color:var(--warn); } .dl.warn .dot { background:var(--warn); }
+  .dl.bad  { color:var(--bad); }  .dl.bad .dot  { background:var(--bad); }
+  .dl .quote { color:var(--mute); }
+  ul { margin:6px 0 10px 18px; padding:0; }
+  .label { font-weight:600; font-size:14px; margin:14px 0 2px; }
+  pre { white-space:pre-wrap; font:inherit; background:var(--bg); border:1px solid var(--line); border-radius:10px; padding:12px; }
+  #err { background:var(--err-bg); color:var(--err-ink); padding:11px 13px; border-radius:10px; margin-bottom:14px; display:none; font-size:15px; }
+  .empty { color:var(--mute); font-size:15px; margin:2px 0 0; }
+  details summary { cursor:pointer; color:var(--mute); font-size:14px; margin-top:10px; }
+  details summary:hover { color:var(--ink); }
+</style>
+</head>
+<body>
+<main>
+  <h1>HopeHunter</h1>
+  <p class="sub">Find real openings from platforms that announce them, then get an honest fit check and a draft. Your story never leaves this laptop.</p>
+  <div id="err" role="alert" aria-live="polite"></div>
+  <div id="modelBanner" role="status" aria-live="polite"></div>
+
+  <div class="card">
+    <h2>1. Find openings</h2>
+    <p class="lead">I read these feeds and keep only the posts that name something you can apply
+      to, one short line each saying what it is. One feed or API link per line.</p>
+    <label for="sources">Feeds to check</label>
+    <textarea id="sources" style="min-height:90px" placeholder="https://opportunitydesk.org/feed/"></textarea>
+    <div class="row">
+      <button id="scan">Scan the feeds</button>
+      <button id="saveSources" class="ghost">Save feeds</button>
+    </div>
+    <p class="meta" id="scanNote" role="status" aria-live="polite"></p>
+    <div id="feed"></div>
+    <div class="row" id="feedMore"></div>
+  </div>
+
+  <div class="card">
+    <h2>2. Add one yourself</h2>
+    <label for="url">Opportunity link</label>
+    <input id="url" type="url" placeholder="Link to a job, fellowship, internship, hackathon...">
+    <div class="row"><button id="addUrl">Read this link</button></div>
+    <details>
+      <summary>Link blocked or needs login? Paste the page text instead</summary>
+      <label for="pasted">Page text</label>
+      <textarea id="pasted" placeholder="Paste the opportunity text here"></textarea>
+      <div class="row"><button id="addText" class="ghost">Read this text</button></div>
+    </details>
+  </div>
+
+  <div class="card">
+    <h2>3. About you <span class="lead">(only for the fit check and the draft)</span></h2>
+    <label for="profile">Your background</label>
+    <textarea id="profile" placeholder="Skills, projects, education, languages, what you're hoping for. Plain words are fine."></textarea>
+    <div class="row"><button id="saveProfile">Save</button></div>
+  </div>
+
+  <div id="list"></div>
+</main>
+
+<script>
+const $ = id => document.getElementById(id);
+let state = { profile: "", opportunities: [], model: "" };
+const FEED_PAGE = 10;
+let showAllFeed = false;
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const ul = a => (a && a.length) ? "<ul>" + a.map(x => "<li>" + esc(x) + "</li>").join("") + "</ul>" : "<p class='meta'>None found.</p>";
+const host = u => String(u || "").replace(/^[a-z]+:\/\//, "").split("/")[0];
+
+function showErr(msg) { const e = $("err"); e.textContent = msg; e.style.display = msg ? "block" : "none"; }
+
+// The wait says what is happening to the reader's request, not which model is doing it. "Local"
+// is the promise at the top of the page; repeating it on every button is noise about the plumbing.
+const BUSY = { "/api/scan": "Reading the feeds...", "/api/match": "Checking your fit...",
+               "/api/draft": "Writing the draft...", "/api/add": "Reading that page...",
+               "/api/track": "Reading that page...", "/api/profile": "Saving...",
+               "/api/sources": "Saving..." };
+
+async function api(path, body, btn) {
+  showErr("");
+  const old = btn && btn.textContent;
+  if (btn) { btn.disabled = true; btn.textContent = BUSY[path] || "Working..."; }
+  try {
+    const r = await fetch(path, { method: "POST", headers: {"Content-Type":"application/json"}, body: JSON.stringify(body || {}) });
+    const j = await r.json();
+    if (!r.ok) throw new Error(j.error || "Something went wrong");
+    state = j; render();
+  } catch (e) { showErr(e.message); }
+  finally { if (btn) { btn.disabled = false; btn.textContent = old; } }
+}
+
+function deadlineTag(f) {
+  const c = f.deadline_check;
+  if (!c) return f.deadline ? `<p class="dl warn"><span class="dot"></span>Deadline ${esc(f.deadline)}
+    <span class="quote">- not checked against the page</span></p>` : "";
+  if (c.status === "verified") {
+    const why = c.quote ? `the page says "${esc(c.quote.slice(0, 60))}"` : "printed as the closing date";
+    return `<p class="dl good"><span class="dot"></span>Closes ${esc(c.shown || c.iso)}
+      <span class="quote">- ${why}</span></p>`;
+  }
+  if (c.status === "past") return `<p class="dl bad"><span class="dot"></span>Closed ${esc(c.shown || c.iso)}</p>`;
+  if (c.status === "unconfirmed") return `<p class="dl warn"><span class="dot"></span>Deadline ${esc(c.shown || c.iso || "?")}
+    <span class="quote">- ${esc(c.note || "not confirmed")}</span></p>`;
+  return `<p class="dl"><span class="dot"></span>No date on the page
+    <span class="quote">- check before you rely on it</span></p>`;
+}
+
+function render() {
+  if (document.activeElement !== $("profile")) $("profile").value = state.profile || "";
+  if (document.activeElement !== $("sources")) $("sources").value = (state.sources || []).join("\n");
+  const b = $("modelBanner");
+  if (state.model_ok === false) {
+    b.textContent = "Nothing can be read right now: the model this app runs is not answering. "
+      + "Start Ollama, then run: ollama pull " + state.model;
+    b.style.display = "block";
+  } else { b.style.display = "none"; }
+  const ls = state.last_scan;
+  const plural = (n, one, many) => `${n} ${n === 1 ? one : many}`;
+  $("scanNote").textContent = ls
+    ? `Last scan: ${plural(ls.added, "opportunity kept", "opportunities kept")}` +
+      `, ${plural(ls.skipped, "blog post skipped", "blog posts skipped")}` +
+      (ls.failed ? `, ${ls.failed} unreadable` : "") +
+      (ls.waiting ? `, ${ls.waiting} more waiting (scan again)` : "") +
+      (ls.errors.length ? ". " + ls.errors.join("; ") : "")
+    : "";
+  // Newest first, and only a page of them: the tracked cards below are where the reading happens,
+  // and a kept list that grows to fifty rows pushed the rest of the app off the bottom of the
+  // scroll. The whole list stays one click away.
+  const items = (state.feed || []).slice().reverse();
+  const shown = showAllFeed ? items : items.slice(0, FEED_PAGE);
+  $("feed").innerHTML = shown.map(x => `
+    <div class="feed-item">
+      <div class="fi-title">${esc(x.title)}</div>
+      ${x.reason ? `<p class="fi-reason">${esc(x.reason)}</p>` : ""}
+      <div class="fi-foot">
+        <span class="fi-meta">${x.type ? `<span class="tag">${esc(x.type)}</span>` : ""}${
+          x.source ? `<span class="fi-src">${esc(host(x.source))}</span>` : ""}</span>
+        <span class="fi-acts">
+          <button class="small ghost" data-feed="track" data-url="${esc(x.url)}">Track</button>
+          <a class="small" href="${esc(x.url)}" target="_blank" rel="noopener">Open</a>
+          <button class="small ghost" data-feed="dismiss" data-url="${esc(x.url)}">Dismiss</button>
+        </span>
+      </div>
+    </div>`).join("") || `<p class="empty">Nothing kept yet. Scan the feeds and the openings that
+    really name something you can apply for land here.</p>`;
+  const more = (state.feed || []).length - FEED_PAGE;
+  $("feedMore").innerHTML = more > 0
+    ? `<button class="small ghost" id="feedMoreBtn">${showAllFeed ? `Show only the newest ${FEED_PAGE}`
+        : `Show all ${(state.feed || []).length} kept posts`}</button>` : "";
+  $("list").innerHTML = state.opportunities.map(o => {
+    const f = o.fields || {}, m = o.match;
+    return `<div class="card opp">
+      <h3>${esc(f.title || "Untitled")}</h3>
+      <div class="meta">${[f.organization, f.location, f.type].filter(Boolean).map(esc).join(" &middot; ")}</div>
+      ${deadlineTag(f)}
+      <p>${esc(f.summary || "")}</p>
+      <details><summary>Eligibility, benefits, how to apply</summary>
+        <div class="label">Eligibility</div>${ul(f.eligibility)}
+        <div class="label">Benefits</div>${ul(f.benefits)}
+        <div class="label">How to apply</div><p>${esc(f.how_to_apply || "Not stated on the page.")}</p>
+      </details>
+      ${m ? `<div class="label">Why you fit</div>${ul(m.why)}
+        <div class="label">Gaps to work on</div>${ul(m.gaps)}
+        <div class="label">Next steps</div>${ul(m.next_steps)}` : ""}
+      ${o.draft ? `<div class="label">Draft message (edit before sending)</div><pre>${esc(o.draft)}</pre>` : ""}
+      <div class="row">
+        <button class="small" data-act="match" data-id="${o.id}">${m ? "Re-check fit" : "How do I fit?"}</button>
+        <button class="small ghost" data-act="draft" data-id="${o.id}">${o.draft ? "Redraft" : "Draft my message"}</button>
+        ${o.url ? `<a class="small" href="${esc(o.url)}" target="_blank" rel="noopener">Open page</a>` : ""}
+        <button class="small ghost" data-act="delete" data-id="${o.id}">Remove</button>
+      </div></div>`;
+  }).join("");
+}
+
+$("list").addEventListener("click", e => {
+  const b = e.target.closest("button[data-act]"); if (!b) return;
+  api("/api/" + b.dataset.act, { id: b.dataset.id }, b);
+});
+$("saveProfile").onclick = e => api("/api/profile", { profile: $("profile").value }, e.target);
+$("scan").onclick = e => api("/api/scan", {}, e.target);
+$("saveSources").onclick = e => api("/api/sources", { sources: $("sources").value }, e.target);
+$("feed").addEventListener("click", e => {
+  const b = e.target.closest("button[data-feed]"); if (!b) return;
+  api("/api/" + b.dataset.feed, { url: b.dataset.url }, b);
+});
+$("feedMore").addEventListener("click", e => {
+  if (!e.target.closest("#feedMoreBtn")) return;
+  showAllFeed = !showAllFeed; render();
+});
+$("addUrl").onclick = async e => { await api("/api/add", { url: $("url").value }, e.target); if (!$("err").style.display || $("err").style.display === "none") $("url").value = ""; };
+$("addText").onclick = e => api("/api/add", { text: $("pasted").value }, e.target);
+
+fetch("/api/state").then(r => r.json()).then(j => { state = j; render(); });
+</script>
+</body>
+</html>
