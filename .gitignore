@@ -21,3 +21,6 @@ scan.json
 
 # Scratch folder the demo GIF was recorded from: an app copy plus its own data.json
 _demo/
+
+# Generated from ARTICLE.md for publishing: the same text with absolute image URLs
+DEV_POST.md

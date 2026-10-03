@@ -1,6 +1,12 @@
-# HopeHunter: a local model that reads opportunity posts so my friend Zohaib doesn't have to
+---
+title: HopeHunter: a local model that reads opportunity posts so my friend Zohaib doesn't have to
+published: false
+tags: devchallenge, weekendchallenge, hf26challenge, gemma
+---
 
 *This is a submission for the [Hacktoberfest Weekend Challenge: Build for a Friend](https://dev.to/challenges/hacktoberfest-weekend-2026-10-01)*
+
+## What I Built
 
 I built this for Zohaib, who has sent me 400 links over the years. "You should
 apply for this." Scholarships, hackathons, junior roles, fellowships, grants. Half of them
@@ -13,39 +19,59 @@ them and just handed you the curated list? His answer was the entire brief for t
 **"Damn, that would be great."** He hasn't run it yet. That's the real state of things: a
 working tool on my laptop, waiting for the person it was built for.
 
-It scans opportunity feeds, reads a posting with a small language model that runs on my
+HopeHunter scans opportunity feeds, reads a posting with a small language model that runs on my
 laptop, pulls out the deadline, tells him honestly what fits and what is missing,
 and drafts the message he'd send. His work history never leaves the machine.
 
 ![Five of the nine openings one scan kept. Each has one plain line saying what it is, and
 the feed that printed it.](shots/01-feed.png)
 
+## Demo
+
 The whole task on one card, fifteen seconds: scroll to a tracked hackathon, ask how the
-person fits, ask for the message. The background is one I wrote for this recording, not my
-friend's.
+person fits, ask for the message. The background on screen is one I wrote for this recording,
+not my friend's.
 
 ![The fit check and the draft appearing on one card.](shots/demo.gif)
 
-## Why the model had to be local
+There is no deployed link, and that is the point: the app runs on the person's own laptop, on
+their own GPU, and a hosted version would mean their CV sitting on someone else's server. Two
+commands to run it yourself:
 
-This is the part that decided the whole design, not a decoration I added afterwards.
+```bash
+ollama pull gemma3:4b
+python app.py          # then open http://127.0.0.1:8000
+```
 
-A CV is the most personal document most people own. Sending it to an API means sending it to
-a company whose terms you did not read, to a server you will never see, along with your name
-and email address. For a tool whose entire job is "read my friend's history and judge it",
-that is the wrong shape. An open-weight model running on the laptop keeps the one sensitive
-input in the one place it belongs.
+Python 3.9+, nothing to install, no account, no key. 103 tests run offline in under half a
+second. Windows users with an older card may need `OLLAMA_VULKAN=1`.
 
-Three more things fell out of that choice, all of them true here:
+## Code
 
-- **Cost per run: zero.** A scan makes about ten model calls. On a hosted API I would have
-  been paying to re-read blog posts that the app then throws away.
-- **It works offline except for the fetching.** The only network traffic is downloading the
-  public pages you asked for.
-- **I could change the model.** Same app, different `OLLAMA_MODEL`. That mattered, because my
-  GPU is from 2017.
+Repo: [github.com/Burry071/hopehunter](https://github.com/Burry071/hopehunter). One Python file
+that uses nothing but the standard library, and one HTML file. MIT.
 
-## The GPU was broken, and it still runs
+{% github https://github.com/Burry071/hopehunter %}
+
+![The same feed on a phone-width screen. It is one column of plain HTML, so there was nothing to
+port.](shots/04-mobile-feed.png)
+
+## How I Built It
+
+The open-source AI at the centre of this is [Gemma 3 4B](https://ollama.com/library/gemma3),
+running locally through Ollama. It does four jobs, and each one is asked of it separately:
+
+- **Screen** a post: is this something a person can apply to, and in one line, what is it?
+- **Extract** a page: title, organiser, deadline, eligibility, benefits, how to apply.
+- **Coach**: compare those fields with the person's own background and say what fits, what is
+  missing, and what to do next.
+- **Draft** the message they would send.
+
+Everything else in the app exists because of what I found when I put those four jobs in front of
+a 4-billion-parameter model and watched. The GPU I ran it on is from 2017, which turned out to be
+its own lesson, so start there.
+
+### The GPU was broken, and it still runs
 
 The machine is an i5-8400H with a Quadro P2000: 4 GB of VRAM, Pascal architecture, compute
 capability 6.1. Every request came back HTTP 500 with `the provided PTX was compiled with an
@@ -57,7 +83,7 @@ ever will.
 with 1.9 of 3.8 GB resident on the card. Slow, but it answers, and the laptop stayed the only
 place the data lived.
 
-## Eight times the app looked fine and was wrong
+### Eight times the app looked fine and was wrong
 
 This is where most of my time went, because a wrong answer does not announce itself. Neither
 does a wrong error message.
@@ -207,7 +233,7 @@ This is the same lesson as mistake one, arriving from the other direction. A sch
 A prompt sentence is a request. The only thing the app can rely on is the check it runs itself,
 after the model has finished being persuasive.
 
-## What I measured instead of guessing
+### What I measured instead of guessing
 
 I assumed reading long pages was the problem, so I started writing chunking code. Then I
 benchmarked it. Of the 36 seconds it takes to read one page, the model spends **about 2
@@ -227,7 +253,12 @@ Asking for shorter answers cut 201 tokens to
 163. And the read cap had been silently truncating We Work Remotely's 2.2 MB feed, which is why
 it had produced exactly zero jobs since I added it; raising the cap gave back **89 jobs**.
 
-## What it still cannot do
+The last piece of tooling is how the demo above was recorded: a scripted stand-in that answers
+with the words a real Gemma run already produced for that same card, so the walkthrough shows
+genuine output at recording speed instead of waiting on an 11-token GPU. It lives in `dev/`, and
+the fixtures name that honestly.
+
+### What it still cannot do
 
 - About a minute per scan of ten posts, because it is one 4 GB GPU from 2017.
 - The filter is not perfect, and the misses are not random. On a live scan it let through
@@ -239,21 +270,44 @@ it had produced exactly zero jobs since I added it; raising the cap gave back **
 - A page behind a login has to be pasted in as text.
 - It cannot tell you whether you got the thing.
 
-## Try it
+## Why Does Open Innovation Matter?
 
-```bash
-ollama pull gemma3:4b
-python app.py          # then open http://127.0.0.1:8000
-```
+This is the part that decided the whole design, not a decoration I added afterwards.
 
-Python 3.9+, nothing to install, no account, no key. 103 tests run offline in under half a
-second.
-Windows users with an older card may need `OLLAMA_VULKAN=1`.
+A CV is the most personal document most people own. Sending it to an API means sending it to
+a company whose terms you did not read, to a server you will never see, along with your name
+and email address. For a tool whose entire job is "read my friend's history and judge it",
+that is the wrong shape. An open-weight model running on the laptop keeps the one sensitive
+input in the one place it belongs.
 
-Repo: [github.com/Burry071/hopehunter](https://github.com/Burry071/hopehunter).
+Three more things fell out of that choice, all of them true here:
 
-![The same feed on a phone-width screen. It is one column of plain HTML, so there was nothing to
-port.](shots/04-mobile-feed.png)
+- **Cost per run: zero.** A scan makes about ten model calls. On a hosted API I would have
+  been paying to re-read blog posts that the app then throws away.
+- **It works offline except for the fetching.** The only network traffic is downloading the
+  public pages you asked for.
+- **I could change the model.** Same app, different `OLLAMA_MODEL`. That mattered, because my
+  GPU is from 2017.
+
+And the closed version was not available to me at any price. A hosted API on this laptop means
+every page read and every judgement costs money, the person's history leaves the machine they
+trust it on, and the whole thing stops working when the network does. Here the model is a file
+on disk that I can point at Vulkan when its CUDA backend crashes on a nine-year-old card. That
+is not a smaller version of the hosted product; it is a different set of trade-offs, and for
+this job they are the ones that let it exist.
+
+## My Agent Session
+
+Not uploaded. The transcript of building this has my friend's real CV in it, and the point of
+the project is that those words stay on one laptop. What the agent did, and the eight places its
+first answer was wrong, is in the section above; the tooling it wrote for itself is in `dev/`.
+
+## Prize Categories
+
+**Best Use of Gemma.** Gemma 3 4B is the model the app is built around: it screens the feeds,
+reads the pages, writes the fit check and the draft. There is no other AI in the loop, and the
+whole design is what a 4-billion-parameter model on a 4 GB card from 2017 can and cannot be
+trusted with.
 
 ## What I got out of it
 
@@ -266,5 +320,3 @@ is cheap, and which I should have been doing from the first day.
 And Zohaib has a tool that reads his feeds on a laptop that sits in the same room he does, with
 nothing about him sent anywhere, which is exactly what he asked for and no hosted API would have
 given him.
-
-#devchallenge #weekendchallenge #hf26challenge #gemma #opensource #python #ai
