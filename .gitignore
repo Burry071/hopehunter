@@ -1,0 +1,20 @@
+# Local state: this holds someone's CV and opportunity list. Never commit it.
+data.json
+data.json.tmp
+
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.venv/
+venv/
+
+# Editors / OS
+.vscode/
+.idea/
+Thumbs.db
+.DS_Store
+
+# My scratch: logs and captures from local runs, may contain profile text
+*.log
+scan.json
