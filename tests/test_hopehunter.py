@@ -779,6 +779,22 @@ def test_non_dict_request_body_is_a_clean_error(monkeypatch, tmp_path):
         handler._handle(42)
 
 
+def test_a_query_string_is_not_part_of_the_route(monkeypatch, tmp_path):
+    # Someone opening the app from a bookmarked "/?utm_source=..." got JSON "not found"
+    # instead of the page, because self.path carries the query.
+    monkeypatch.setattr(app, "DATA_FILE", tmp_path / "data.json")
+    monkeypatch.setattr(app, "ROOT", tmp_path)
+    (tmp_path / "index.html").write_text("<html>app</html>", encoding="utf-8")
+    app.save({"profile": "", "sources": [], "opportunities": [], "feed": []})
+    sent = []
+    handler = object.__new__(app.Handler)
+    handler._foreign_host = lambda: False
+    handler._send = lambda *a: sent.append(a)
+    handler.path = "/?utm_source=bookmark"
+    handler.do_GET()
+    assert sent[0][0] == 200 and sent[0][1] == b"<html>app</html>"
+
+
 # ---------- how much of a page is read, and how fast ----------
 
 def test_a_short_page_is_passed_through_untouched():

@@ -806,10 +806,12 @@ class Handler(BaseHTTPRequestHandler):
     def do_GET(self):
         if self._foreign_host():
             return self._send(403, {"error": "This app only answers localhost."})
+        # A query string is not part of the route: "/" and "/?x=1" are the same page.
+        path = self.path.split("?", 1)[0]
         try:
-            if self.path in ("/", "/index.html"):
+            if path in ("/", "/index.html"):
                 self._send(200, (ROOT / "index.html").read_bytes(), "text/html")
-            elif self.path == "/api/state":
+            elif path == "/api/state":
                 self._send(200, view(load()))
             else:
                 self._send(404, {"error": "not found"})
