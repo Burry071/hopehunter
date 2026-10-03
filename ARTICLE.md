@@ -244,8 +244,8 @@ Python 3.9+, nothing to install, no account, no key. 102 tests run offline in un
 second.
 Windows users with an older card may need `OLLAMA_VULKAN=1`.
 
-Repo: [REPO URL]. Demo: ![demo]([GIF LINK]). How I built it, agent session included:
-[SESSION LINK].
+Repo: [github.com/Burry071/hopehunter](https://github.com/Burry071/hopehunter). Demo:
+![demo]([GIF LINK]). How I built it, agent session included: [SESSION LINK].
 
 ![The same feed on a phone-width screen. It is one column of plain HTML, so there was nothing to
 port.](shots/04-mobile-feed.png)
