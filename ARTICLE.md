@@ -20,6 +20,12 @@ and drafts the message he'd send. His work history never leaves the machine.
 ![Five of the nine openings one scan kept. Each has one plain line saying what it is, and
 the feed that printed it.](shots/01-feed.png)
 
+The whole task on one card, fifteen seconds: scroll to a tracked hackathon, ask how the
+person fits, ask for the message. The background is one I wrote for this recording, not my
+friend's.
+
+![The fit check and the draft appearing on one card.](shots/demo.gif)
+
 ## Why the model had to be local
 
 This is the part that decided the whole design, not a decoration I added afterwards.
@@ -240,12 +246,11 @@ ollama pull gemma3:4b
 python app.py          # then open http://127.0.0.1:8000
 ```
 
-Python 3.9+, nothing to install, no account, no key. 102 tests run offline in under half a
+Python 3.9+, nothing to install, no account, no key. 103 tests run offline in under half a
 second.
 Windows users with an older card may need `OLLAMA_VULKAN=1`.
 
-Repo: [github.com/Burry071/hopehunter](https://github.com/Burry071/hopehunter). Demo:
-![demo]([GIF LINK]). How I built it, agent session included: [SESSION LINK].
+Repo: [github.com/Burry071/hopehunter](https://github.com/Burry071/hopehunter).
 
 ![The same feed on a phone-width screen. It is one column of plain HTML, so there was nothing to
 port.](shots/04-mobile-feed.png)

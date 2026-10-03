@@ -8,6 +8,11 @@ own words, tells you honestly how you fit, and drafts the message you'd send.
 ![Five of the nine openings one scan kept, each with one plain line saying what it is and the feed
 that printed it.](shots/01-feed.png)
 
+The fit check and the draft on one card, fifteen seconds:
+
+![A tracked hackathon read against a background written for the recording: the fit check
+appears, then the draft message.](shots/demo.gif)
+
 Your background text and all AI processing stay on your machine: the model runs locally
 through Ollama, and the only outgoing requests are reads of the public feeds and pages you
 list. Nothing you write about yourself is sent anywhere.
