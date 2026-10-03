@@ -1,0 +1,80 @@
+{
+  "profile": "Third-year food-science student teaching themself Python after lectures. Two small projects: a watering timer for balcony plants and a script that cleans duplicate rows out of lab CSVs. A little HTML, no CSS. About ten hours a week free. Has never entered a hackathon or applied for anything like this.",
+  "sources": [
+    "https://opportunitydesk.org/feed/",
+    "https://www.opportunitiesforyouth.com/feed",
+    "https://devpost.com/api/hackathons?status[]=upcoming&order_by=deadline",
+    "https://weworkremotely.com/categories/remote-programming-jobs.rss",
+    "https://remoteok.com/feed"
+  ],
+  "feed": [
+    {
+      "url": "https://opportunitydesk.org/2026/10/03/loeb-fellowship-2027-2028/",
+      "title": "Loeb Fellowship 2027-2028 at the Harvard Graduate School of Design (Funded)",
+      "type": "fellowship",
+      "reason": "Application is open for the Loeb Fellowship 2027-2028."
+    },
+    {
+      "url": "https://opportunitydesk.org/2026/10/03/citiesrise-fellowship-for-housing-equity/",
+      "title": "citiesRISE Fellowship for Housing Equity",
+      "type": "fellowship",
+      "reason": "A funded fellowship for people working on housing policy."
+    },
+    {
+      "url": "https://ensign-build.devpost.com/",
+      "title": "Ensign Build",
+      "type": "hackathon",
+      "reason": "A weekend technology build competition, open to anyone who can attend in Salt Lake City."
+    },
+    {
+      "url": "https://opportunitydesk.org/2026/10/02/google-ireland-student-scholarships/",
+      "title": "Google Ireland Student Scholarships",
+      "type": "scholarship",
+      "reason": "Google is taking applications for its student scholarship round."
+    },
+    {
+      "url": "https://opportunitiesfeed.com/american-university-essay-award/",
+      "title": "American University Essay Award",
+      "type": "award",
+      "reason": "An essay prize open to undergraduate applicants."
+    }
+  ],
+  "fields": {
+    "title": "Ensign Build",
+    "organization": "Devpost",
+    "type": "hackathon",
+    "deadline": "October 9 – 10, 2026",
+    "deadline_iso": "",
+    "deadline_quote": "October 9 – 10, 2026",
+    "location": "Ensign College Building, Salt Lake City, Utah",
+    "eligibility": [],
+    "benefits": [],
+    "how_to_apply": "",
+    "summary": "Bring your idea to life! Join a weekend technology build competition.",
+    "deadline_check": {
+      "iso": "",
+      "shown": "October 9 – 10, 2026",
+      "quote": "October 9 – 10, 2026",
+      "status": "unconfirmed",
+      "note": "The model gave no clean date to check."
+    }
+  },
+  "match": {
+    "why": [
+      "Your food science background provides a strong foundation in analytical thinking and problem-solving.",
+      "Self-taught Python skills, though limited in scope, demonstrate initiative and a desire to learn new technologies.",
+      "The watering timer and CSV cleaning scripts showcase practical application of your coding knowledge."
+    ],
+    "gaps": [
+      "Your Python experience is currently focused on scripting and doesn't include larger project development or collaborative coding.",
+      "The lack of experience with hackathons might create some initial anxiety, but it's a valuable learning opportunity.",
+      "Building a project from scratch within a short timeframe requires careful planning and prioritization."
+    ],
+    "next_steps": [
+      "Start brainstorming project ideas that align with your Python skills and the hackathon theme.",
+      "Research successful hackathon projects to gain inspiration and understand the level of competition.",
+      "Consider a simpler project idea to ensure you can complete it within the deadline."
+    ]
+  },
+  "draft": "Subject: Interest in Ensign Build\n\nDear Devpost Team,\n\nI'm writing to express my interest in participating in the Ensign Build hackathon. As a third-year food science student, I'm currently expanding my technical skills by learning Python, primarily through self-directed study following my lectures.\n\nI've recently completed two small projects: a Python script for automating watering timers for balcony plants and a script to remove duplicate rows from CSV files used in my lab. My HTML knowledge is limited, but I'm comfortable with basic scripting.\n\nI have about ten hours a week available and I'm eager to contribute to a collaborative project. I haven't participated in hackathons before, but I'm excited about the opportunity to build something new.\n\nI'll be joining the hackathon as soon as submissions open.\n\nSincerely,\n\n[Person's Name]"
+}

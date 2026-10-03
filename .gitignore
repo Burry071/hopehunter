@@ -18,3 +18,6 @@ Thumbs.db
 # My scratch: logs and captures from local runs, may contain profile text
 *.log
 scan.json
+
+# Scratch folder the demo GIF was recorded from: an app copy plus its own data.json
+_demo/
