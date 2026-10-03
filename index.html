@@ -190,7 +190,7 @@ function render() {
       `, ${plural(ls.skipped, "blog post skipped", "blog posts skipped")}` +
       (ls.failed ? `, ${ls.failed} unreadable` : "") +
       (ls.waiting ? `, ${ls.waiting} more waiting (scan again)` : "") +
-      (ls.errors.length ? ". " + ls.errors.join("; ") : "")
+      (ls.errors && ls.errors.length ? ". " + ls.errors.join("; ") : "")
     : "";
   // Newest first, and only a page of them: the tracked cards below are where the reading happens,
   // and a kept list that grows to fifty rows pushed the rest of the app off the bottom of the
